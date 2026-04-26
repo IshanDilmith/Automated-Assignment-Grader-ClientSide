@@ -1,0 +1,50 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 33% 98%;
+    --foreground: 215 35% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 35% 14%;
+    --muted: 214 31% 95%;
+    --muted-foreground: 215 16% 46%;
+    --border: 214 28% 88%;
+    --accent: 178 72% 94%;
+    --accent-foreground: 183 86% 16%;
+    --primary: 196 88% 34%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 28 96% 94%;
+    --secondary-foreground: 19 78% 26%;
+    --success: 150 61% 40%;
+    --warning: 35 92% 48%;
+    --danger: 0 78% 53%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: "IBM Plex Sans", "Trebuchet MS", sans-serif;
+    background-image:
+      radial-gradient(circle at top left, rgba(20, 184, 166, 0.08), transparent 30%),
+      linear-gradient(180deg, rgba(15, 23, 42, 0.02), rgba(15, 23, 42, 0));
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
