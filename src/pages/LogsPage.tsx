@@ -28,8 +28,8 @@ export function LogsPage() {
       />
 
       <Card>
-        <CardContent className="grid gap-3 pt-6 md:grid-cols-[1fr_160px_auto]">
-          <Select value={lineCount} onChange={(event) => setLineCount(Number(event.target.value))}>
+        <CardContent className="grid grid-cols-3 gap-3 pt-6">
+          <Select className="max-w-xs" value={lineCount} onChange={(event) => setLineCount(Number(event.target.value))}>
             <option value={100}>Last 100</option>
             <option value={200}>Last 200</option>
             <option value={500}>Last 500</option>
@@ -37,7 +37,7 @@ export function LogsPage() {
           <div className="text-sm text-muted-foreground">
             {snapshot?.exists ? snapshot.filePath : "Log file not found yet"}
           </div>
-          <Button variant="outline" onClick={() => void loadLogs()}>
+          <Button className="max-w-32 ml-auto" variant="outline" onClick={() => void loadLogs()}>
             <RefreshCw className="h-4 w-4" />
             Refresh
           </Button>
