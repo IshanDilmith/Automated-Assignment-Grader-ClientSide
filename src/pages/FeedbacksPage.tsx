@@ -83,8 +83,8 @@ export function FeedbacksPage() {
                     </div>
                   </div>
 
-                  <div className="mt-4 rounded-lg bg-gradient-to-br from-slate-50 to-violet-50 p-4">
-                    <p className="text-sm leading-relaxed text-foreground/80">
+                  <div className="mt-4 rounded-xl border border-violet-100 bg-gradient-to-br from-violet-50/50 to-white p-5">
+                    <p className="text-sm leading-relaxed text-slate-700">
                       {feedback.content.length > 300
                         ? `${feedback.content.slice(0, 300)}…`
                         : feedback.content}
@@ -92,8 +92,13 @@ export function FeedbacksPage() {
                   </div>
 
                   <div className="mt-4 flex justify-end">
-                    <Button variant="outline" size="sm" onClick={() => setSelected(feedback)}>
-                      View full feedback
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-violet-600 hover:bg-violet-50 hover:text-violet-700"
+                      onClick={() => setSelected(feedback)}
+                    >
+                      Read full feedback
                     </Button>
                   </div>
                 </div>
@@ -109,22 +114,20 @@ export function FeedbacksPage() {
           if (!open) setSelected(null);
         }}
         title={selected ? `Feedback — ${selected.studentId}` : "Feedback"}
-        description={selected?.filePath}
+        description={selected?.fileName}
       >
         {selected ? (
-          <div className="grid gap-4">
-            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              <span className="rounded-lg bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700">
+          <div className="grid gap-6">
+            <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground font-medium uppercase tracking-wider">
+              <span className="rounded-full bg-violet-100 px-3 py-1 text-violet-700">
                 Draft Feedback
               </span>
-              <span>{selected.fileName}</span>
-              <span>·</span>
               <span>{selected.sizeBytes} bytes</span>
               <span>·</span>
               <span>{formatDistanceToNow(new Date(selected.modifiedAt), { addSuffix: true })}</span>
             </div>
-            <div className="max-h-[480px] overflow-auto rounded-xl border border-border bg-gradient-to-br from-slate-50 to-violet-50 p-5">
-              <div className="whitespace-pre-wrap text-sm leading-7 text-foreground/90">
+            <div className="max-h-[520px] overflow-auto rounded-2xl border border-violet-100 bg-gradient-to-b from-white to-slate-50/50 p-6 shadow-inner">
+              <div className="whitespace-pre-wrap text-base leading-relaxed text-slate-800 font-normal">
                 {selected.content}
               </div>
             </div>

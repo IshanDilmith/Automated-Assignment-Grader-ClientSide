@@ -97,6 +97,7 @@ export type RunResponse = {
 export type RunStartResponse = {
   ok: boolean;
   status: RunState;
+  error?: string;
 };
 
 export type RunState = {

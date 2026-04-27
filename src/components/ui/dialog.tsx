@@ -15,7 +15,7 @@ export function Dialog({ open, onOpenChange, title, description, children }: Dia
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4" role="dialog" aria-modal="true">
-      <div className="w-full max-w-2xl rounded-2xl border border-border bg-card p-5 shadow-2xl">
+      <div className="w-full max-w-2xl max-h-[90vh] overflow-auto rounded-2xl border border-border bg-card p-5 shadow-2xl">
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
             <h2 className="text-lg font-semibold">{title}</h2>

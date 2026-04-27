@@ -415,6 +415,15 @@ function runPythonGrader() {
 }
 
 async function handleRun() {
+  const submissions = await listSubmissions();
+  if (submissions.length === 0) {
+    return {
+      ok: false,
+      error: "No submissions found. Please add student files to the submissions folder before running.",
+      status: runState,
+    };
+  }
+
   if (runState.status === "running") {
     return {
       ok: false,

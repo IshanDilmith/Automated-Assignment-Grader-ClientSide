@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AlertCircle, CheckCircle2, Clock3, LoaderCircle, Play } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock3, LoaderCircle, Play, X } from "lucide-react";
 import { api } from "@/lib/api";
 import type { HealthResponse, RunState } from "@/lib/types";
 import { PageHeader } from "@/components/common/page-header";
@@ -13,6 +13,7 @@ export function RunPage() {
   const [runState, setRunState] = useState<RunState | null>(null);
   const [requestingRun, setRequestingRun] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" | "info" } | null>(null);
 
   useEffect(() => {
     void api.health().then(setHealth);
@@ -20,9 +21,23 @@ export function RunPage() {
   }, []);
 
   useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  useEffect(() => {
     const timer = window.setInterval(() => {
       void api.runStatus()
         .then((state) => {
+          // Detect completion
+          if (runState?.status === "running" && state.status === "completed") {
+            setToast({ message: "Grader run completed successfully!", type: "success" });
+          } else if (runState?.status === "running" && state.status === "failed") {
+            setToast({ message: "Grader run failed.", type: "error" });
+          }
+
           setRunState(state);
           if (state.status !== "running") {
             setRequestingRun(false);
@@ -32,18 +47,27 @@ export function RunPage() {
     }, 2500);
 
     return () => window.clearInterval(timer);
-  }, []);
+  }, [runState?.status]);
 
   async function handleRun() {
     setRequestingRun(true);
     setError(null);
     try {
-      await api.run();
+      const response = await api.run();
+      if (response.error) {
+        setError(response.error);
+        setToast({ message: response.error, type: "error" });
+        setRequestingRun(false);
+        return;
+      }
       const state = await api.runStatus();
       setRunState(state);
       await api.health().then(setHealth);
+      setToast({ message: "Grader started...", type: "info" });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to run grader");
+      const msg = err instanceof Error ? err.message : "Failed to run grader";
+      setError(msg);
+      setToast({ message: msg, type: "error" });
       setRequestingRun(false);
     }
   }
@@ -163,6 +187,30 @@ export function RunPage() {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className={`flex items-center gap-3 rounded-2xl border p-4 shadow-2xl backdrop-blur-md ${
+            toast.type === "success" ? "border-green-100 bg-green-50/90 text-green-900" :
+            toast.type === "error" ? "border-red-100 bg-red-50/90 text-red-900" :
+            "border-blue-100 bg-blue-50/90 text-blue-900"
+          }`}>
+            {toast.type === "success" ? <CheckCircle2 className="h-5 w-5 text-green-500" /> :
+             toast.type === "error" ? <AlertCircle className="h-5 w-5 text-red-500" /> :
+             <Clock3 className="h-5 w-5 text-blue-500" />}
+            <div className="text-sm font-medium">{toast.message}</div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-6 w-6 rounded-full hover:bg-black/5" 
+              onClick={() => setToast(null)}
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
