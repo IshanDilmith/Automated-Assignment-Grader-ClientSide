@@ -5,11 +5,9 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/submissions", label: "Submissions", icon: FileText },
-  { to: "/rubric", label: "Rubric", icon: BookOpen },
   { to: "/reports", label: "Reports", icon: ScrollText },
   { to: "/feedbacks", label: "Feedbacks", icon: MessageSquareText },
   { to: "/run", label: "Run grader", icon: Play },
-  { to: "/logs", label: "Logs", icon: ScrollText },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
