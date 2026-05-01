@@ -139,7 +139,7 @@ function sanitizeSubmissionFileName(fileName) {
   if (!base || base !== fileName) {
     throw new Error("Invalid submission file name.");
   }
-  if (!/\.(txt|md|py)$/i.test(base)) {
+  if (!/\.(txt|md|py|pdf|docx|doc)$/i.test(base)) {
     throw new Error("Only .txt, .md, and .py submission files are supported.");
   }
   if (!/^[A-Za-z0-9._-]+$/.test(base)) {
@@ -215,10 +215,19 @@ async function listSubmissions() {
   const submissions = [];
 
   for (const entry of entries) {
-    if (!entry.isFile() || !/\.(md|txt|py)$/i.test(entry.name)) continue;
+    if (!entry.isFile() || !/\.(md|txt|py|pdf|docx|doc)$/i.test(entry.name)) continue;
     const filePath = path.join(SUBMISSIONS_DIR, entry.name);
-    const content = await readFile(filePath, "utf-8");
-    const lines = content.split(/\r?\n/);
+    const ext = path.extname(entry.name).toLowerCase();
+    let content = "";
+    let lines = [];
+    if (/\.(pdf|docx|doc)$/i.test(ext)) {
+      // binary submission; don't attempt to read as text
+      content = "";
+      lines = [];
+    } else {
+      content = await readFile(filePath, "utf-8");
+      lines = content.split(/\r?\n/);
+    }
     const studentId = path.parse(entry.name).name;
     const report = reportMap.get(studentId);
     const stats = await stat(filePath);
@@ -230,7 +239,7 @@ async function listSubmissions() {
       extension: path.extname(entry.name),
       sizeBytes: stats.size,
       lineCount: lines.length,
-      preview: lines.slice(0, 6).join("\n").trim(),
+      preview: lines.length ? lines.slice(0, 6).join("\n").trim() : (/\.(pdf|docx|doc)$/i.test(entry.name) ? "(binary file)" : ""),
       content,
       status: deriveSubmissionStatus(report),
       reportGrade: report?.grade ?? null,
@@ -492,19 +501,33 @@ async function handleSubmissionPost(req) {
   const body = await readRequestBody(req);
   const payload = JSON.parse(body);
   const fileName = sanitizeSubmissionFileName(payload.fileName);
-  const content = String(payload.content ?? "").trimEnd();
+  const isBinary = !!payload.isBinary;
+  const raw = payload.content;
 
-  if (!content.trim()) {
-    throw new Error("Submission content cannot be empty.");
+  if (raw === undefined || raw === null) {
+    throw new Error("Submission content is missing.");
   }
 
-  await writeFile(path.join(SUBMISSIONS_DIR, fileName), `${content}\n`, "utf-8");
+  const dest = path.join(SUBMISSIONS_DIR, fileName);
+  if (isBinary) {
+    // payload.content is expected to be a base64 string
+    const buf = Buffer.from(String(raw), "base64");
+    await writeFile(dest, buf);
+  } else {
+    const content = String(raw ?? "").trimEnd();
+    if (!content.trim()) {
+      throw new Error("Submission content cannot be empty.");
+    }
+    await writeFile(dest, `${content}\n`, "utf-8");
+  }
+
+  const stats = await stat(dest);
 
   return {
     ok: true,
     fileName,
-    filePath: path.join(SUBMISSIONS_DIR, fileName),
-    sizeBytes: Buffer.byteLength(`${content}\n`, "utf-8"),
+    filePath: dest,
+    sizeBytes: stats.size,
   };
 }
 

@@ -24,10 +24,6 @@ export function TopBar() {
         </div>
 
         <div className="flex w-full flex-col gap-3 lg:w-auto lg:flex-row lg:items-center">
-          <div className="relative w-full lg:w-[320px]">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input className="pl-9" placeholder="Search submissions, reports, and logs..." />
-          </div>
           <Button variant="outline" size="icon" aria-label="Notifications">
             <Bell className="h-4 w-4" />
           </Button>

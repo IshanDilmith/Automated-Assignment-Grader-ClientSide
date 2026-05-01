@@ -49,7 +49,7 @@ export const api = {
   logs: (lines = 200) => request<LogSnapshot>(`/api/logs?lines=${lines}`),
   run: () => request<RunStartResponse>("/api/run", { method: "POST" }),
   runStatus: () => request<RunState>("/api/run/status"),
-  uploadSubmission: (payload: { fileName: string; content: string }) =>
+  uploadSubmission: (payload: { fileName: string; content: string; isBinary?: boolean }) =>
     request<UploadSubmissionResponse>("/api/submissions", {
       method: "POST",
       body: JSON.stringify(payload),

@@ -190,7 +190,7 @@ export function RunPage() {
       
       {/* Toast Notification */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed top-6 right-6 z-50 animate-in fade-in slide-in-from-top-4 duration-300">
           <div className={`flex items-center gap-3 rounded-2xl border p-4 shadow-2xl backdrop-blur-md ${
             toast.type === "success" ? "border-green-100 bg-green-50/90 text-green-900" :
             toast.type === "error" ? "border-red-100 bg-red-50/90 text-red-900" :
